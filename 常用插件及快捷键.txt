@@ -1,0 +1,9 @@
+插件：
+---eclipse插件
+1.jad（Eclipse Class Decompiler）   反编译插件
+2.Quick Search （Quick Search for eclipse）全局文本搜索插件   快捷键：win（ctrl+shift+l）mac(command+shift+l)
+
+
+快捷键：
+---eclipse快捷键
+1.ctrl + h  工程内搜索文本及替换
