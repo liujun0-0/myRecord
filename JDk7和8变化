@@ -1,0 +1,115 @@
+1.1 Why JDK8?
+开发效率的提升：用更少的代码完成更多的工作（Lambda代替匿名内部类、易于并行）
+可以使用函数式思维编程（高阶函数解放思想、消除副作用、简洁、各语言发展的趋势）
+未来趋势：一些开源项目及框架开始基于java8开发
+JVM新特性：元空间代替永久代（避免JDK以及前期版本中常见的永久内存错误OOM:PermGen）
+1.1.1 JDK8与JDK7代码对比
+JDK7
+for (int i = 0; i < arr.length; i++) {
+
+if (arr[i] % 2 != 0) {
+
+arr[i]++;
+
+}
+
+System.out.println(arr[i]);
+
+}
+JDK8
+Stream.of(arr)
+
+.map(x →(x % 2 == 0 ? x : x + 1))
+
+.forEach(System.out::println);
+
+Optional：优雅的处理null
+
+JDK7
+public User getUser() {
+return user;
+}
+
+public List<Order> getOrders() {
+User user = getUser();
+if (user != null) {
+return user.getOrders();
+} else {
+return Collections.emptyList();
+}
+
+}
+JDK8
+public Optional<User> getUser() {
+return Optional.ofNullable(user);
+}
+
+public List<Order> getOrders() {
+
+return getUser().map(u → u.getOrdes())
+
+.orElse(Collections.emptyList());
+
+}
+
+建议：如果接口的返回值有可能是null，请用Optional封装
+
+优雅，下游不用写恶心的if-else判断
+安全：告知接口的使用方返回值可能为null，需要处理，以避免代码缺陷
+文档化：接口中可能为空的值文档化
+1.1.2 易于并行
+统计1-1000000内所有质数的数量
+
+串行
+IntStream.range(1, 1000000)
+.filter(PrimeUtil::isPrime)
+.count();
+并行
+IntStream.range(1, 1000000)
+.parallel()
+.filter(PrimeUtil::isPrime)
+.count();
+
+增强的Future：CompletableFuture
+
+读写锁的改进：StampedLock（乐观的读策略增加系统的并行度）
+
+原子类的增强：LongAdder（更快的原子类）、LongAccumulator
+
+1.1.3 JVM新特性：元空间代替永久代
+参考：
+
+http://www.infoq.com/cn/articles/Java-PERMGEN-Removed?from=groupmessage&isappinstalled=0
+
+http://www.6gdown.com/softedupage/59348.html
+
+JDK7：“永久的”数据存放在一个叫做永久代的区域。永久代一段连续的内存空间，我们在JVM启动之前可以通过设置-XX:MaxPermSize的值来控制永久代的大小，32位机器默认的永久代的大小为64M，64位的机器则为85M。永久代的垃圾回收和老年代的垃圾回收是绑定的，一旦其中一个区域被占满，这两个区都要进行垃圾回收。但是有一个明显的问题，由于我们可以通过‑XX:MaxPermSize 设置永久代的大小，一旦类的元数据超过了设定的大小，程序就会耗尽内存，并出现内存溢出错误(OOM)。
+JDK8：“永久的”数据被移到了一个与堆不相连的本地内存区域（元空间），这项改动是很有必要的，因为对永久代进行调优是很困难的。永久代中的元数据可能会随着每一次Full GC发生而进行移动。并且为永久代设置空间大小也是很难确定的，因为这其中有很多影响因素，比如类的总数，常量池的大小和方法数量等。将元数据从永久代剥离出来，不仅实现了对元空间的无缝管理，还可以简化Full GC以及对以后的并发隔离类元数据等方面进行优化。
+
+
+
+
+
+
+移除永久代的影响：
+
+由于类的元数据分配在本地内存中，元空间的最大可分配空间就是系统可用内存空间。因此，我们就不会遇到永久代存在时的内存溢出错误，也不会出现泄漏的数据移到交换区这样的事情。最终用户可以为元空间设置一个可用空间最大值，如果不进行设置，JVM会自动根据类的元数据大小动态增加元空间的容量。
+注意：永久代的移除并不代表自定义的类加载器泄露问题就解决了。因此，你还必须监控你的内存消耗情况，因为一旦发生泄漏，会占用你的大量本地内存，并且还可能导致交换区交换更加糟糕。
+元空间数据管理：
+
+元空间的内存管理由元空间虚拟机来完成。先前，对于类的元数据我们需要不同的垃圾回收器进行处理，现在只需要执行元空间虚拟机的C++代码即可完成。在元空间中，类和其元数据的生命周期和其对应的类加载器是相同的。话句话说，只要类加载器存活，其加载的类的元数据也是存活的，因而不会被回收掉。
+元空间调优：
+
+默认情况下，-XX:MaxMetaspaceSize的值没有限制，因此元空间甚至可以延伸到交换区，但是这时候当我们进行本地内存分配时将会失败。
+为了避免频繁的GC，建议将–XX:MetaspaceSize设置为一个相对较高的值。对于一个64位的服务器端JVM来说，其默认的–XX:MetaspaceSize值为21MB。这就是初始的高水位线。一旦触及到这个水位线，Full GC将会被触发并卸载没有用的类（即这些类对应的类加载器不再存活），然后这个高水位线将会重置。新的高水位线的值取决于GC后释放了多少元空间。如果释放的空间不足，这个高水位线则上升。如果释放空间过多，则高水位线下降。如果初始化的高水位线设置过低，上述高水位线调整情况会发生很多次。
+经过多次GC之后，元空间虚拟机自动调节高水位线，以此来推迟下一次垃圾回收到来。
+有这样两个选项 ‑XX:MinMetaspaceFreeRatio和‑XX:MaxMetaspaceFreeRatio，他们类似于GC的FreeRatio选项，用来设置元空间空闲比例的最大值和最小值。我们可以通过命令行对这两个选项设置对应的值。
+获取元空间信息的工具：
+
+jmap -clstats PID：打印类加载器数据（-clstats是-permstat的替代方案）
+jstat -gc LVMID：打印元空间的信息
+jcmd PID GC.class_stats：连接到运行的JVM并输出详尽的类元数据的柱状图。
+存在的问题：元空间虚拟机采用了组块分配的形式，同时区块的大小由类加载器类型决定。类信息并不是固定大小，因此有可能分配的空闲区块和类需要的区块大小不同，这种情况下可能导致碎片存在。元空间虚拟机目前并不支持压缩操作，所以碎片化是目前最大的问题。
+
+1.1.4 关于垃圾收集
+参考：http://developer.51cto.com/art/201508/489420.htm
