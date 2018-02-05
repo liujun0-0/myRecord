@@ -1,1 +1,2 @@
 etcd：它是一个键值存储仓库，用于配置共享和服务发现。
+     介绍：http://blog.csdn.net/hxpjava1/article/details/78275995
