@@ -1,0 +1,6 @@
+1.kubectl version：查看版本
+2.kubectl  run：在Kubernetes上运行一个应用程序。
+  eg:kubectl run kubernetes-bootcamp --image=docker.io/jocatalin/kubernetes-bootcamp:v1 --port=8080
+3.kubectl get deployments：要列出您的部署
+
+运行在Kubernetes内部的Pods是一个私有的，隔离的网络。默认情况下，对于同一个kubernetes集群中的其他Pods和运行的服务中是可见的，但外网不可见。
