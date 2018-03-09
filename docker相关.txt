@@ -1,0 +1,13 @@
+docker安装文件目录
+
+https://download.docker.com/linux/centos/7/x86_64/stable/Packages/
+docker安装说明文档
+https://docs.docker.com/install/linux/docker-ce/centos/#upgrade-docker-ce
+docker管理界面文档
+http://www.cnblogs.com/kevingrace/p/6655153.html
+
+wget 
+
+https://download.docker.com/linux/centos/7/x86_64/stable/Packages/docker-ce-
+
+17.12.1.ce-1.el7.centos.x86_64.rpm
