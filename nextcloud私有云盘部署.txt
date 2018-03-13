@@ -30,6 +30,8 @@ docker run -d --name nextcloud -p 8888:8888 \
        wonderfall/nextcloud:13
 
 
-登录地址： xxx:8888/login
+登录地址： xxx:8888/login   xxx:8888/nextcloud
 
 phpMyAdmin  //mysql web管理工具
+docker run --name mysqlweb -d -e PMA_ARBITRARY=1 -p 8900:80 phpmyadmin/phpmyadmin
+登录地址： xxx:8900
