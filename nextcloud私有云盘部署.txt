@@ -1,0 +1,30 @@
+docker pull wonderfall/nextcloud:13  && docker pull mariadb:10
+
+docker run -d --name db_nextcloud \
+       -v /docker/nextcloud/db:/var/lib/mysql \
+       -e MYSQL_ROOT_PASSWORD=supersecretpassword \
+       -e MYSQL_DATABASE=nextcloud -e MYSQL_USER=nextcloud \
+       -e MYSQL_PASSWORD=supersecretpassword \
+       mariadb:10
+
+docker run -d --name nextcloud -p 8888:8888 \
+       --link mymysql:mymysql \
+       -v $PWD/nextcloud/data:/data \
+       -v $PWD/nextcloud/config:/config \
+       -v $PWD/nextcloud/apps:/apps2 \
+       -v $PWD/nextcloud/themes:/nextcloud/themes \
+       -e UID=1000 -e GID=1000 \
+       -e UPLOAD_MAX_SIZE=10G \
+       -e APC_SHM_SIZE=128M \
+       -e OPCACHE_MEM_SIZE=128 \
+       -e CRON_PERIOD=15m \
+       -e TZ=Aisa/Shanghai \
+       -e ADMIN_USER=admin \
+       -e ADMIN_PASSWORD=admin123456 \
+       -e DOMAIN=118.25.38.199:8888 \
+       -e DB_TYPE=mysql \
+       -e DB_NAME=nextcloud \
+       -e DB_USER=root \
+       -e DB_PASSWORD=123456 \
+       -e DB_HOST=mymysql:3306 \
+       wonderfall/nextcloud:13
