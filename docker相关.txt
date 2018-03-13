@@ -7,3 +7,9 @@ docker管理界面文档
 http://www.cnblogs.com/kevingrace/p/6655153.html
 
 wget https://download.docker.com/linux/centos/7/x86_64/stable/Packages/docker-ce-17.12.1.ce-1.el7.centos.x86_64.rpm
+
+docker命令：
+docker image ls             //查看下载镜像
+docker rmi 镜像id/镜像名     //删除本地下载镜像
+docker ps -a                //显示所有启动的容器
+docker rm 镜像id            //删除启动镜像
