@@ -31,3 +31,5 @@ docker run -d --name nextcloud -p 8888:8888 \
 
 
 登录地址： xxx:8888/login
+
+phpMyAdmin  //mysql web管理工具
