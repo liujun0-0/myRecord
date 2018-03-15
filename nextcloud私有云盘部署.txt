@@ -24,7 +24,7 @@ docker run -d --name nextcloud -p 8888:8888 \
        -e DOMAIN=118.25.38.199 \
        -e DB_TYPE=mysql \
        -e DB_NAME=nextcloud \
-       -e DB_USER=root \
+       -e DB_USER=nextcloud \
        -e DB_PASSWORD=123456 \
        -e DB_HOST=mymysql:3306 \
        wonderfall/nextcloud:13
