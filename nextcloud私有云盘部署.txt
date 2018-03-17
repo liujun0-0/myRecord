@@ -38,4 +38,4 @@ docker run --name mysqlweb -d -e PMA_ARBITRARY=1 -p 8900:80 phpmyadmin/phpmyadmi
 
 portainer  //docker ui工具
 docker run --name portainer-docker-ui -d -p 9001:9000 -v /var/run/docker.sock:/var/run/docker.sock portainer/portainer
-访问：xxxx:90001
+访问：xxxx:9001
