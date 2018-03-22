@@ -30,12 +30,19 @@ docker run -d --name nextcloud -p 8888:8888 \
        wonderfall/nextcloud:13
 
 
-登录地址： xxx:8888/login   xxx:8888/nextcloud
+登录地址： http://xxx:8888/login   http://xxx:8888/nextcloud
 
 phpMyAdmin  //mysql web管理工具
 docker run --name mysqlweb -d -e PMA_ARBITRARY=1 -p 8900:80 phpmyadmin/phpmyadmin
-登录地址： xxx:8900
+登录地址： http://xxx:8900
 
 portainer  //docker ui工具
 docker run --name portainer-docker-ui -d -p 9001:9000 -v /var/run/docker.sock:/var/run/docker.sock portainer/portainer
-访问：xxxx:9001
+访问：http://xxxx:9001
+
+gittea    //githulb简化版
+https://docs.gitea.io/zh-cn/install-with-docker/
+docker pull gitea/gitea:latest
+mkdir -p xxx/gitea
+docker run -d --name=gitea -p 10022:22 -p 10080:3000 -v xxx/gitea:/data gitea/gitea:latest
+访问 http://hostname:10080 
