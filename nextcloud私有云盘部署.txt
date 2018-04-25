@@ -48,4 +48,4 @@ docker run -d --name=gitea -p 10022:22 -p 10080:3000 -v xxx/gitea:/data gitea/gi
 访问 http://hostname:10080 
 
 webide   //在线代码编辑器
-docker run -d --name webide -p 8081:8080 -v xxx/.coding-ide-home:/home/coding/.coding-ide-home  webide/webide
+docker run -d --name webide -p 8088:8080 -v xxx/.coding-ide-home:/home/coding/.coding-ide-home  webide/webide
