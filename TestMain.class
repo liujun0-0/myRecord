@@ -1,0 +1,42 @@
+package com.orgin.template.common.config.spring.json.mode;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+
+public class TestMain {
+
+    public static void main(String[] args) throws IOException {
+        // TODO Auto-generated method stub
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setSerializerFactory(
+                objectMapper.getSerializerFactory().withSerializerModifier(new TestBeanSerializerModifier()));
+        // objectMapper.updateValue(valueToUpdate, overrides)
+        // 不显示为null的字段
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        SimpleModule simpleModule = new SimpleModule();
+        // 自定义反序列化
+        simpleModule.addDeserializer(Long.class, new StringToLongDeserializer());
+        // simpleModule.setDeserializerModifier(new TestBeanDeserializerModifier());
+        // simpleModule.addSerializer(Long.TYPE, ToStringSerializer.instance);
+        objectMapper.registerModule(simpleModule);
+
+        List<TestObject> list = new ArrayList<>();
+        list.add(new TestObject(10012l, "ss", null));
+        list.add(new TestObject(10112l, "ss1", null));
+        TestObject testObject = new TestObject(10012l, "ss", list);
+        String json = objectMapper.writeValueAsString(testObject);
+        System.err.println(json);
+
+        String js =
+                "{\"jsonType\":100.12,\"include\":\"ss\",\"filter\":[{\"jsonType\":100.12,\"include\":\"ss\"},{\"jsonType\":101.12,\"include\":\"ss1\"}]}";
+        TestObject readValue = objectMapper.readValue(js, TestObject.class);
+        System.err.println(JSON.toJSONString(readValue));
+    }
+
+}
