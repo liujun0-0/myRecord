@@ -1,0 +1,44 @@
+package com.orgin.template.common.config.spring.json.mode;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonStreamContext;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.orgin.template.common.config.spring.json.annotation.AmountConver;
+import com.orgin.template.common.config.spring.json.annotation.AmountConver.CoverType;
+
+public class StringToLongDeserializer extends JsonDeserializer<Long> {
+
+    @Override
+    public Long deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        JsonNode node = jp.getCodec().readTree(jp);
+        JsonStreamContext parsingContext = jp.getParsingContext();
+        String currentName = parsingContext.getCurrentName();
+        Object currentValue = parsingContext.getCurrentValue();
+        Class<? extends Object> class1 = currentValue.getClass();
+        System.err.println("current class:" + currentValue.toString() + ",field:" + currentName);
+        Field field = null;
+        try {
+            field = class1.getDeclaredField(currentName);
+        } catch (NoSuchFieldException | SecurityException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        AmountConver annotation = field.getAnnotation(AmountConver.class);
+
+        if (annotation != null) {
+            CoverType type = annotation.type();
+            if (type == CoverType.StringToLong) {
+                Double asDouble = node.asDouble();
+                asDouble = asDouble * 100;
+                return asDouble.longValue();
+            }
+        }
+        return node.asLong();
+    }
+}
