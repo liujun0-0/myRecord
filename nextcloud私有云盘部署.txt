@@ -6,8 +6,8 @@ docker run -d --name db_nextcloud \
        -e MYSQL_DATABASE=nextcloud -e MYSQL_USER=nextcloud \
        -e MYSQL_PASSWORD=supersecretpassword \
        mariadb:10
-
-docker run -d --name nextcloud -p 8888:8888 \
+ 
+ docker run -d --name nextcloud -p 8888:8888 \
        --link mymysql:mymysql \
        -v $PWD/nextcloud/data:/data \
        -v $PWD/nextcloud/config:/config \
@@ -28,9 +28,36 @@ docker run -d --name nextcloud -p 8888:8888 \
        -e DB_PASSWORD=123456 \
        -e DB_HOST=mymysql:3306 \
        wonderfall/nextcloud:13
+ 
+docker pull nextcloud
+docker run -d --name nextcloud -p 8888:80 \
+       -v /home/myDockerImagesDisk/nextcloud/data:/var/www/html/data \
+       -v /home/myDockerImagesDisk/nextcloud/config:/var/www/html/config \
+       -v /home/myDockerImagesDisk/nextcloud/apps:/var/www/html/custom_apps \
+       -v /home/myDockerImagesDisk/nextcloud/themes:/var/www/html/themes \
+       -e UID=1000 -e GID=1000 \
+       -e UPLOAD_MAX_SIZE=10G \
+       -e APC_SHM_SIZE=128M \
+       -e OPCACHE_MEM_SIZE=128 \
+       -e NEXTCLOUD_DATA_DIR=/var/www/html/data \
+       -e CRON_PERIOD=15m \
+       -e TZ=Aisa/Shanghai \
+       nextcloud:latest
 
 
 登录地址： http://xxx:8888/login   http://xxx:8888/nextcloud
+
+mysql:
+docker run --name mymysql -p 3306:3306 -v /home/myDockerImagesDisk/mysql/conf.d:/etc/mysql/conf.d -e MYSQL_ROOT_PASSWORD=密码 -d mysql:8.0
+命令：
+mysql -u root -p 
+use mysql; 
+select host,user from user; 
+CREATE USER 'admin'@'%' IDENTIFIED WITH mysql_native_password BY '密码';
+ALTER USER `admin`@`%` IDENTIFIED WITH caching_sha2_password BY '密码';
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';
+FLUSH   PRIVILEGES;生效修改
+flush hosts;刷新地址缓存
 
 phpMyAdmin  //mysql web管理工具
 docker run --name mysqlweb -d -e PMA_ARBITRARY=1 -p 8900:80 phpmyadmin/phpmyadmin
